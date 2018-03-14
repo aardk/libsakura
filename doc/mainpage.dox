@@ -1,0 +1,106 @@
+/**
+ * @~
+ * @mainpage Sakura Library API
+ * <h2>
+ * Sakura Library is a high-performance, thread-safe library compatible with C and C++ 
+ * that is optimized for data analysis of astronomy and astrophysics. 
+ * </h2>
+ *
+ * @section intro Introduction
+ * Sakura Library (libsakura) is a data analysis library that aims at more efficient 
+ * processing than ever. To improve a performance, Sakura Library vectorizes the operation  
+ * by making effective use of SIMD instructions. This is accomplished by implementing each 
+ * function as compiler-friendly as possible so that the compiler produces highly vectorized 
+ * object code. If the compiler fails to vectorize, or misses using desired SIMD instructions, 
+ * in a certain function, we write manually vectorized code for that function using 
+ * intrinsics.  
+ *
+ * The Sakura Library is written based on C++11 standard, but can be used from both 
+ * C and C++ because its interface is compatible with C.
+ *  
+ * At the present time, the main application of the Sakura Library is the reduction of 
+ * astronomical 
+ * data taken by radio telescopes, especially single-dish radio telescopes. 
+ * However, functions in Sakura Library are 
+ * designed as generic as possible. Thus, Sakura Library should be applicable to any kind 
+ * of data analysis. 
+ *
+ * Currently available functions are as follows:
+ * - interpolation
+ * - least-square fitting
+ * - non-linear Gaussian fitting
+ * - data filtering/masking
+ * - convolution (1- and 2-dimensional)
+ * - calculation of statistics
+ * - bit operation
+ * - specific functions for radio astronomical data analysis
+ * - miscellaneous utility functions
+ * 
+ * @section getting Getting Sakura Library
+ * 
+ * Main page of the Sakura Library is 
+ * 
+ * http://alma-intweb.mtk.nao.ac.jp/~sakura/
+ *
+ * Source code of the Sakura Library are distributed in gzip-compressed tarballs. 
+ * Latest release can be downloaded from:
+ *
+ * ftp://alma-dl.mtk.nao.ac.jp/sakura/releases/latest_src
+ *
+ * Name of the tarball follows the naming scheme below:
+ * @verbatim
+ libsakura-<major version>.<minor version>.<code revision>.tgz
+ @endverbatim
+ *
+ * @section build How to build libsakura
+ * Please see <a href="./INSTALL.txt">INSTALL.txt</a> for detailed instruction on how 
+ * to build libsakura. <a href="./INSTALL.txt">INSTALL.txt</a> should also be included 
+ * in the package.
+ *
+ * @section link How to link libsakura to your application
+ * Include <libsakura/sakura.h> from your sources.
+ * @code
+ * #include <libsakura/sakura.h>
+ * @endcode
+ *
+ * Link your application with libsakura, for example, by
+ * @verbatim
+ cc/c++ -I<where libsakura resides>/include your sources -rdynamic -L<where libsakura resides>/lib -Wl,-rpath,<where libsakura resides>/lib -lsakura ...
+ @endverbatim
+ *
+ * For example:
+ * @verbatim
+$ cat <<EOF >sample.c
+#include <stdio.h>
+#include <libsakura/sakura.h>
+
+int main() {
+	sakura_Status status = sakura_Initialize(NULL, NULL);
+	if (sakura_Status_kOK != status) return 1;
+	printf("%zu\n", sakura_GetAlignment());
+	sakura_CleanUp ();
+	return 0;
+}
+EOF
+$ cc -I<where libsakura resides>/include sample.c -rdynamic -L <where libsakura resides>/lib -Wl,-rpath,<where libsakura resides>/lib -lsakura
+$ ./a.out
+ @endverbatim
+ *
+ * @section api API
+ * Public API of Sakura Library is available @ref sakura.h "here".
+ * All parameters marked as 'must-be-aligned' must be aligned at vector operation word boundary.
+ * You can get required word size by calling @ref sakura_GetAlignment.
+ * Functions marked as 'MT-safe' can safely be called from threads that are running in parallel. 
+ * On the other hand, functions without 'MT-safe' sign must be called sequentially, i.e., 
+ * you should not use those functions on multi-thread processing. 
+ *
+ * @section license License
+ * The Sakura Library is free software. It is distributed under 
+ * <a href="https://www.gnu.org/licenses/lgpl-3.0.en.html" target="_blank">LGPL version 3</a>. 
+ * See COPYING and COPYING.LESSER for details about terms and conditions. Those 
+ * files should be included in the source distribution of the Sakura Library. 
+ * 
+ * @section contact Contact us
+ * Please send bug report to sakura@alma.mtk.nao.ac.jp if you find a bug.
+ */
+;

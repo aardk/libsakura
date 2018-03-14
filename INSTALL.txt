@@ -1,0 +1,190 @@
+Sakura Library
+==============
+
+[1] http://alma-intweb.mtk.nao.ac.jp/~sakura/
+
+
+Overview
+--------
+
+Sakura is a high performance library for astronomical data analysis, developed by the ALMA Computing Team of the National Astronomical Observatory of Japan (NAOJ).
+
+ALMA - Atacama Large Millimeter/submillimeter Array - is the largest astronomical project in existence: a single telescope of revolutionary design, composed of 66 high precision antennas located on the Chajnantor plateau, 5000 meters altitude in northern Chile.
+
+Sakura is optimized to use Single Instruction Multiple Data (SIMD) instructions.
+SIMD instructions boost performances by leveraging data level parallelism features commonly available in modern CPUs.
+
+For more information in Japanese, please refer to the official ALMA web page of NAOJ [1], and search for Sakura.
+
+Installation
+------------
+
+Sakura is currently distributed in source form only.
+You have to build Sakura from source to install the library.
+Please refer to the Installation Procedure section below for details.
+
+Supported Platforms
+-------------------
+
+Sakura should work on any platform fulfilling the prerequisites listed in the Installation Procedure. 
+
+Tested Platforms
+----------------
+
+Sakura has been successfully tested on the following platforms
+- Red Hat Enterprise Linux 5 (RHEL5)
+- Red Hat Enterprise Linux 6 (RHEL6)
+- Canonical Ubuntu 14.4
+- Apple OS X 10.8
+- Apple OS X 10.10
+- Apple OS X 10.11
+
+Installation Procedure
+----------------------
+
+Sakura installation procedure is broken into 5 steps:
+1. Prerequisites
+2. Downloading the source
+3. Building
+4. Testing
+5. Final install
+
+1. Prerequisites
+--------------------------
+
+1.1 Prerequisites common to Linux and Apple OS X Operating Systems
+1.1.1 Prerequisites coming from dependencies of the build system on software tools
+* cmake 2.8 or higher
+* doxygen 1.8 or higher
+* gtest 1.7 or higher
+
+1.1.2 Prerequisites coming from dependencies of Sakura on third-party external libraries
+Mandatory prerequisites:
+* eigen 3.2 or higher
+* fftw 3.3.2 or higher. If you build fftw from source, use the configure options "--enable-shared" to build libfftw as a shared library.
+Optional prerequisites:
+* lib4cxx. This library adds a logging feature to Sakura, allowing messages from Sakura to be logged at run-time. 
+
+1.2 Linux specific Prerequisites
+* C++ compiler with C++11 support (gcc/g++ 4.8 or higher or clang/clang++ 3.5 or higher). Note: default gcc/g++ on RHEL5 and some versions of RHEL6 is not compliant with this requirement, so you must install a compliant compiler to build Sakura on these operating systems.
+
+1.3 Apple OS X specific Prerequisites
+* xcode 5.1 or higher
+
+2. Downloading the Source
+-------------------------
+
+Sakura library source code releases are distributed in gzip-compressed tarballs named libsakura-X.Y.Z.tar.gz.
+Latest release can be downloaded from:
+
+ftp://anonymous:ftp@alma-dl.mtk.nao.ac.jp/sakura/releases/latest_src
+
+3. Building
+-----------
+
+3.1 Expand Sakura library tarball file:
+
+[work]$ tar -xvzf libsakura-src-X.Y.Z.tar.gz
+
+Above command creates a libsakura directory in your working directory. 
+
+3.2 Setup a Google Test framework for Sakura
+
+Sakura library uses Google Test framework (gtest) to run unit tests.
+
+3.2.1 Expand a gtest bundle (e.g. gtest-1.7.0.zip) into the libsakura directory:
+
+[work]$ unzip gtest-1.7.0.zip -d libsakura
+
+3.2.2 Create in the libsakura directory a symbolic link named gtest, pointing to the expanded gtest bundle:  
+   
+[work]$ cd libsakura
+[libsakura]$ ln -s gtest-1.7.0 gtest
+
+3.3 Generate Sakura build system
+
+In this step, you run cmake to generate Sakura build system.
+
+You might typically have to customize the cmake command line to specify:
+- where you want Sakura to be installed
+- and where the fftw3 and Eigen libraries are installed in your system
+
+In the simplest case where compliant versions of fftw3 and Eigen are automatically found by cmake, you simply have to run:
+
+gcc:
+[libsakura]$ cd build
+[build]$ cmake ..
+
+clang: (especially for Mac users)
+[libsakura]$ cd build
+[build]$ env CC=clang CXX=clang++ cmake ..
+
+A typical customized cmake command would look like:
+[build]$ cmake -D CMAKE_INSTALL_PREFIX=/path/to/sakura/installation_dir -D FFTW3_ROOT_DIR=/path/to/my_system/fftw3 -D EIGEN3_INCLUDE_DIR=/path/to/my_system/eigen ..
+ 
+cmake options you may want to customize:
+CMAKE_INSTALL_PREFIX
+  Specifies the directory where to install Sakura. 
+  Add to cmake command line e.g: -D CMAKE_INSTALL_PREFIX=/usr/local/lib/sakura
+
+FFTW3_ROOT_DIR
+  Specifies the directory where the fftw library is installed on your system.
+  Add to cmake command line e.g: -D FFTW3_ROOT_DIR=/opt/fftw/fftw-3.3.2
+
+EIGEN3_INCLUDE_DIR
+  Specifies the directory where the Eigen library is installed on your system.
+  Add to cmake command line e.g: -D -D EIGEN3_INCLUDE_DIR=/opt/eigen/eigen-3.2.0
+
+CMAKE_BUILD_TYPE
+  Specifies a build type. Allowed values:
+  * Debug          Debug mode. Compiler flag is -g
+  * Release        Release mode. Compiler flag is -O3 -DNDEBUG
+  * RelWithDebInfo Debug+Release mode. Compiler flag is -g -O3 -DNDEBUG
+  Add to cmake command line e.g: -D CMAKE_BUILD_TYPE=Debug
+
+SIMD_ARCH
+  Specify an optimization option. Allowed values:
+  * SSE4   Most conservative optimization
+  * AVX    Use AVX instruction set 
+  * AVX2   Use AVX2 instruction set 
+  * NATIVE Use appropriate instruction set on your machine
+  Add to cmake command line e.g: -D SIMD_ARCH=SSE4
+
+BUILD_DOC
+  Enable/disable Doxygen generation of Sakura API HTML documentation
+  To disable documentation generation, add to cmake command line: -D BUILD_DOC:BOOL=OFF
+
+3.4 Build Sakura
+
+[build]$ make
+
+3.5 Generate Sakura API HTML documentation
+
+You can skip this step if you specified -D BUILD_DOC:BOOL=OFF on cmake command line.
+ 
+[build]$ make apidoc
+
+4. Testing
+----------
+
+This step allows you to verify that your installation of Sakura is working correctly.
+
+[build]$ make test
+
+5. Final install
+----------------
+
+[build]$ make install
+
+If you need to install Sakura library in a directory such as /usr/local which requires root privileges, you must run the command as root:
+[build]$ su
+[build]# make install
+
+
+
+
+
+ 
+
+
+
