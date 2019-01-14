@@ -73,7 +73,7 @@ LIBSAKURA_SYMBOL(StatisticsResultFloat) *result) {
 template<typename T>
 void ExpectEQ(T const &ref, T const &result) {
 	if (std::isnan(ref)) {
-		EXPECT_TRUE(isnan(result));
+		EXPECT_TRUE(std::isnan(result));
 	} else {
 		EXPECT_EQ(ref, result);
 	}
@@ -87,7 +87,7 @@ void ExpectRealEQ(T const &ref, T const &result) {
 template<>
 void ExpectRealEQ<double>(double const &ref, double const &result) {
 	if (std::isnan(ref)) {
-		EXPECT_TRUE(isnan(result));
+		EXPECT_TRUE(std::isnan(result));
 	} else {
 		EXPECT_DOUBLE_EQ(ref, result);
 	}
@@ -144,12 +144,12 @@ bool CallAndTestResult(LIBSAKURA_SYMBOL(StatisticsResultFloat) const &ref,
 	auto min_index_ptr = &decltype(result)::index_of_min;
 	auto min_max_test =
 			[&data, &result, &result_accurate](decltype(min_ptr) attr, decltype(min_index_ptr) index) {
-				if (isnan(result.*attr)) {
-					EXPECT_TRUE(isnan(result_accurate.*attr));
+				if (std::isnan(result.*attr)) {
+					EXPECT_TRUE(std::isnan(result_accurate.*attr));
 					EXPECT_EQ(-1, result.*index);
 					EXPECT_EQ(-1, result_accurate.*index);
 				} else {
-					EXPECT_FALSE(isnan(result_accurate.*attr));
+					EXPECT_FALSE(std::isnan(result_accurate.*attr));
 					EXPECT_EQ(result.*attr, result_accurate.*attr);
 					EXPECT_LE(0, result.*index);
 					EXPECT_LE(0, result_accurate.*index);
@@ -171,18 +171,18 @@ bool CallAndTestResult(LIBSAKURA_SYMBOL(StatisticsResultFloat) const &ref,
 	EXPECT_EQ(result.count, result_accurate.count);
 	auto value_test =
 			[&result, &result_accurate](decltype(&decltype(result)::sum) attr) {
-				if (isnan(result.*attr)) {
-					EXPECT_TRUE(isnan(result_accurate.*attr));
+				if (std::isnan(result.*attr)) {
+					EXPECT_TRUE(std::isnan(result_accurate.*attr));
 				} else {
-					EXPECT_TRUE(!isnan(result_accurate.*attr));
+					EXPECT_TRUE(!std::isnan(result_accurate.*attr));
 				}
 			};
 	value_test(&decltype(result)::sum);
 	value_test(&decltype(result)::square_sum);
 
-	if ((!isnan(result.sum) && !isnan(result_accurate.sum)
+	if ((!std::isnan(result.sum) && !std::isnan(result_accurate.sum)
 			&& result.sum != result_accurate.sum)
-			|| (!isnan(result.square_sum) && !isnan(result_accurate.square_sum)
+			|| (!std::isnan(result.square_sum) && !std::isnan(result_accurate.square_sum)
 					&& result.square_sum != result_accurate.square_sum)) {
 		if (false) { // for debug
 			std::cout << "error ratio: \n";
